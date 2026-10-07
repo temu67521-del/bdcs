@@ -6,23 +6,14 @@
 <title>Admin · Bahir Dar Computer School</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  /* ============ 3D BACKGROUND ============ */
   #bg3d {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
+    position: fixed; inset: 0; z-index: -1;
     background: linear-gradient(135deg, #0b3d91 0%, #082a66 50%, #041a3d 100%);
-    overflow: hidden;
-    perspective: 800px;
+    overflow: hidden; perspective: 800px;
   }
-  #bg3d::before,
-  #bg3d::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: .55;
-    animation: float 20s ease-in-out infinite;
+  #bg3d::before, #bg3d::after {
+    content: ""; position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: .55; animation: float 20s ease-in-out infinite;
   }
   #bg3d::before {
     width: 500px; height: 500px;
@@ -32,18 +23,13 @@
   #bg3d::after {
     width: 600px; height: 600px;
     background: radial-gradient(circle, #ffb300, transparent 70%);
-    bottom: -150px; right: -150px;
-    animation-delay: -10s;
+    bottom: -150px; right: -150px; animation-delay: -10s;
   }
-
-  /* Floating 3D cubes */
   .cube {
-    position: absolute;
-    width: 60px; height: 60px;
+    position: absolute; width: 60px; height: 60px;
     background: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,255,255,.02));
     border: 1px solid rgba(255,255,255,.25);
     border-radius: 8px;
-    transform-style: preserve-3d;
     animation: rotate3d 25s linear infinite;
   }
   .cube:nth-child(1) { top: 15%; left: 10%; animation-duration: 28s; }
@@ -61,64 +47,33 @@
     100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
   }
 
-  /* ============ 3D LOGIN CARD ============ */
   .admin-login-wrap {
-    min-height: 85vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 85vh; display: flex; align-items: center; justify-content: center;
     padding: 40px 20px;
   }
   .card3d {
-    width: 100%;
-    max-width: 440px;
-    perspective: 1200px;
-    transform-style: preserve-3d;
+    width: 100%; max-width: 440px; perspective: 1200px; transform-style: preserve-3d;
   }
   .card3d-inner {
     position: relative;
     background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(240,245,255,.92));
-    border-radius: 24px;
-    padding: 44px 36px;
-    box-shadow:
-      0 30px 60px -20px rgba(0,0,0,.55),
-      0 0 0 1px rgba(255,255,255,.7),
-      inset 0 1px 0 rgba(255,255,255,.9);
+    border-radius: 24px; padding: 44px 36px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.7), inset 0 1px 0 rgba(255,255,255,.9);
     transform-style: preserve-3d;
     transition: transform .4s cubic-bezier(.2,.9,.3,1.15), box-shadow .4s;
     backdrop-filter: blur(10px);
   }
   .card3d:hover .card3d-inner {
-    box-shadow:
-      0 45px 80px -20px rgba(11,61,145,.6),
-      0 0 0 1px rgba(255,179,0,.5),
-      inset 0 1px 0 rgba(255,255,255,.9);
+    box-shadow: 0 45px 80px -20px rgba(11,61,145,.6), 0 0 0 1px rgba(255,179,0,.5), inset 0 1px 0 rgba(255,255,255,.9);
   }
-
-  .card3d-inner h3 {
-    font-size: 1.75rem;
-    text-align: center;
-    margin: 0 0 8px;
-    color: #0b3d91;
-    transform: translateZ(30px);
-  }
-  .card3d-inner .sub {
-    text-align: center;
-    color: #5a6b82;
-    font-size: .9rem;
-    margin-bottom: 28px;
-    transform: translateZ(20px);
-  }
+  .card3d-inner h3 { font-size: 1.75rem; text-align: center; margin: 0 0 8px; color: #0b3d91; transform: translateZ(30px); }
+  .card3d-inner .sub { text-align: center; color: #5a6b82; font-size: .9rem; margin-bottom: 28px; transform: translateZ(20px); }
 
   .lock-icon {
-    width: 70px; height: 70px;
-    margin: 0 auto 18px;
+    width: 70px; height: 70px; margin: 0 auto 18px;
     background: linear-gradient(135deg, #0b3d91, #1e88e5);
-    border-radius: 20px;
-    display: grid;
-    place-items: center;
-    font-size: 2rem;
-    box-shadow: 0 15px 30px -8px rgba(11,61,145,.6);
+    border-radius: 20px; display: grid; place-items: center;
+    font-size: 2rem; box-shadow: 0 15px 30px -8px rgba(11,61,145,.6);
     transform: translateZ(50px);
     animation: pulse 3s ease-in-out infinite;
   }
@@ -127,116 +82,63 @@
     50% { box-shadow: 0 20px 40px -8px rgba(255,179,0,.7); }
   }
 
-  /* ============ PASSWORD FIELD WITH TOGGLE ============ */
-  .pw-wrap {
-    position: relative;
-    transform: translateZ(15px);
-  }
+  .pw-wrap { position: relative; transform: translateZ(15px); }
   .pw-wrap input {
-    width: 100%;
-    padding: 14px 50px 14px 16px;
-    border: 2px solid #d5e0f0;
-    border-radius: 12px;
-    font-size: 1rem;
-    background: #fff;
+    width: 100%; padding: 14px 50px 14px 16px;
+    border: 2px solid #d5e0f0; border-radius: 12px;
+    font-size: 1rem; background: #fff;
     transition: border-color .2s, box-shadow .2s;
   }
   .pw-wrap input:focus {
-    outline: none;
-    border-color: #0b3d91;
+    outline: none; border-color: #0b3d91;
     box-shadow: 0 0 0 4px rgba(11,61,145,.15);
   }
   .pw-toggle {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    line-height: 1;
-    color: #5a6b82;
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: transparent; border: none; cursor: pointer;
+    padding: 8px 10px; border-radius: 8px;
+    font-size: 1.2rem; line-height: 1; color: #5a6b82;
     transition: background .2s, color .2s;
   }
-  .pw-toggle:hover {
-    background: #eaf1fb;
-    color: #0b3d91;
-  }
-  .pw-toggle.showing {
-    color: #0b3d91;
-  }
+  .pw-toggle:hover { background: #eaf1fb; color: #0b3d91; }
 
-  /* ============ BUTTON ============ */
   .btn-3d {
-    width: 100%;
-    margin-top: 24px;
-    padding: 16px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #fff;
+    width: 100%; margin-top: 24px; padding: 16px;
+    border: none; border-radius: 12px;
+    font-size: 1.05rem; font-weight: 700; color: #fff;
     background: linear-gradient(135deg, #0b3d91, #1e88e5);
-    cursor: pointer;
-    transform: translateZ(25px);
-    box-shadow:
-      0 12px 24px -8px rgba(11,61,145,.6),
-      inset 0 -3px 0 rgba(0,0,0,.15),
-      inset 0 1px 0 rgba(255,255,255,.35);
+    cursor: pointer; transform: translateZ(25px);
+    box-shadow: 0 12px 24px -8px rgba(11,61,145,.6), inset 0 -3px 0 rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.35);
     transition: transform .15s, box-shadow .15s;
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
   .btn-3d::after {
-    content: "";
-    position: absolute;
-    top: 0; left: -100%;
+    content: ""; position: absolute; top: 0; left: -100%;
     width: 60%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
     transition: left .6s;
   }
   .btn-3d:hover {
     transform: translateZ(25px) translateY(-2px);
-    box-shadow:
-      0 18px 32px -8px rgba(11,61,145,.75),
-      inset 0 -3px 0 rgba(0,0,0,.15),
-      inset 0 1px 0 rgba(255,255,255,.35);
+    box-shadow: 0 18px 32px -8px rgba(11,61,145,.75), inset 0 -3px 0 rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.35);
   }
   .btn-3d:hover::after { left: 200%; }
   .btn-3d:active { transform: translateZ(25px) translateY(1px); }
   .btn-3d:disabled { opacity: .7; cursor: not-allowed; }
 
-  /* ============ HINT ============ */
-  .hint {
-    margin-top: 20px;
-    text-align: center;
-    font-size: .8rem;
-    color: #5a6b82;
-    transform: translateZ(10px);
-  }
-  .hint code {
-    background: #eaf1fb;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-family: monospace;
-    color: #0b3d91;
-    font-weight: 700;
-  }
+  .hint { margin-top: 20px; text-align: center; font-size: .8rem; color: #5a6b82; transform: translateZ(10px); }
+  .hint code { background: #eaf1fb; padding: 2px 8px; border-radius: 6px; font-family: monospace; color: #0b3d91; font-weight: 700; }
 
-  /* ============ DASHBOARD ============ */
   #dash { animation: fadeIn .5s ease-out; }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Dashboard background adjustments */
+  body { background: #f4f7fb; }
+  header, footer { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
 
-<!-- 3D Animated Background -->
 <div id="bg3d">
   <div class="cube"></div>
   <div class="cube"></div>
@@ -250,7 +152,6 @@
 
 <main>
 
-<!-- Login -->
 <div class="admin-login-wrap" id="login">
   <div class="card3d" id="card3d">
     <div class="card3d-inner">
@@ -258,24 +159,19 @@
       <h3>Admin Login</h3>
       <p class="sub">Bahir Dar Computer School</p>
 
-      <label for="pw" style="transform:translateZ(15px);display:block;margin-bottom:8px;font-weight:600;color:#082a66">
-        Password
-      </label>
+      <label for="pw" style="transform:translateZ(15px);display:block;margin-bottom:8px;font-weight:600;color:#082a66">Password</label>
       <div class="pw-wrap">
         <input id="pw" type="password" placeholder="Enter admin password" autocomplete="current-password">
         <button type="button" class="pw-toggle" id="pwToggle" title="Show password" aria-label="Show password">👁</button>
       </div>
 
       <button type="button" class="btn-3d" id="in">🔓 Log in</button>
-
       <div id="lm" class="msg" style="margin-top:16px"></div>
-
-      <p class="hint">Default: <code>12345678</code></p>
+      <p class="hint">Password is set in <code>Render → Environment → ADMIN_PASSWORD</code></p>
     </div>
   </div>
 </div>
 
-<!-- Dashboard -->
 <div id="dash" hidden>
   <h2 class="sec" style="margin-top:24px">School Admin</h2>
 
@@ -284,6 +180,7 @@
     <button type="button" data-t="crs">📚 Courses</button>
     <button type="button" data-t="tch">👨‍🏫 Teachers</button>
     <button type="button" data-t="cat">🏷️ Categories</button>
+    <button type="button" data-t="pwd">🔑 Password</button>
     <button type="button" class="btn out-dark" id="out" style="margin-left:auto">Log out</button>
   </div>
 
@@ -391,16 +288,48 @@
       </table>
     </div>
   </section>
+
+  <section id="pane-pwd" hidden>
+    <div class="panel" style="max-width:520px;margin:0 auto">
+      <h3 style="margin-top:0">🔑 Change Admin Password</h3>
+      <p style="color:#5a6b82;font-size:.9rem;margin-bottom:20px">
+        The default password is set in <b>Render → Environment → ADMIN_PASSWORD</b>.
+        Change it here to override for this session.
+      </p>
+
+      <label>Current password</label>
+      <div class="pw-wrap" style="margin-bottom:14px">
+        <input id="cp_current" type="password" placeholder="Enter current password">
+        <button type="button" class="pw-toggle" data-target="cp_current">👁</button>
+      </div>
+
+      <label>New password</label>
+      <div class="pw-wrap" style="margin-bottom:14px">
+        <input id="cp_new" type="password" placeholder="At least 6 characters">
+        <button type="button" class="pw-toggle" data-target="cp_new">👁</button>
+      </div>
+
+      <label>Confirm new password</label>
+      <div class="pw-wrap" style="margin-bottom:14px">
+        <input id="cp_confirm" type="password" placeholder="Re-type new password">
+        <button type="button" class="pw-toggle" data-target="cp_confirm">👁</button>
+      </div>
+
+      <p style="margin-top:20px">
+        <button type="button" class="btn" id="cp_save">💾 Save new password</button>
+      </p>
+      <div id="cp_msg" class="msg"></div>
+    </div>
+  </section>
 </div>
 </main>
 
 <script>
-/* ============ STATE ============ */
 var T = sessionStorage.getItem('bdcs_t');
 var rows = [];
 var cats = [], tchs = [], clist = [], tlist = [], gcat = [];
 
-/* ============ 3D CARD TILT ============ */
+/* ===== 3D CARD TILT ===== */
 var card3d = document.getElementById('card3d');
 if (card3d) {
   var inner = card3d.querySelector('.card3d-inner');
@@ -408,8 +337,7 @@ if (card3d) {
     var rect = card3d.getBoundingClientRect();
     var x = e.clientX - rect.left;
     var y = e.clientY - rect.top;
-    var cx = rect.width / 2;
-    var cy = rect.height / 2;
+    var cx = rect.width / 2, cy = rect.height / 2;
     var rx = ((y - cy) / cy) * -10;
     var ry = ((x - cx) / cx) * 10;
     inner.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
@@ -419,27 +347,25 @@ if (card3d) {
   });
 }
 
-/* ============ PASSWORD TOGGLE ============ */
-var pwInput = document.getElementById('pw');
-var pwToggle = document.getElementById('pwToggle');
-if (pwToggle) {
-  pwToggle.onclick = function() {
-    if (pwInput.type === 'password') {
-      pwInput.type = 'text';
-      pwToggle.textContent = '🙈';
-      pwToggle.title = 'Hide password';
-      pwToggle.classList.add('showing');
-    } else {
-      pwInput.type = 'password';
-      pwToggle.textContent = '👁';
-      pwToggle.title = 'Show password';
-      pwToggle.classList.remove('showing');
-    }
-    pwInput.focus();
-  };
+/* ===== PASSWORD TOGGLE (login + change password) ===== */
+function togglePw(btn) {
+  var target = btn.dataset.target || 'pw';
+  var input = document.getElementById(target);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+  input.focus();
 }
+document.querySelectorAll('.pw-toggle').forEach(function(btn) {
+  btn.onclick = function() { togglePw(this); };
+});
 
-/* ============ HELPERS ============ */
+/* ===== HELPERS ===== */
 function showMsg(id, txt, cls) {
   var el = document.getElementById(id);
   el.className = 'msg show ' + (cls || 'info');
@@ -448,12 +374,10 @@ function showMsg(id, txt, cls) {
 function hideMsg(id) { document.getElementById(id).className = 'msg'; }
 function H() { return { 'x-admin-token': T }; }
 
-/* ============ DRAW REGISTRATIONS ============ */
+/* ===== DRAW REGISTRATIONS ===== */
 function draw() {
   var q = (document.getElementById('q').value || '').toLowerCase();
-  var list = rows.filter(function(r) {
-    return JSON.stringify(r).toLowerCase().indexOf(q) >= 0;
-  });
+  var list = rows.filter(function(r) { return JSON.stringify(r).toLowerCase().indexOf(q) >= 0; });
 
   document.getElementById('tb').innerHTML = list.map(function(r) {
     return '<tr>' +
@@ -479,12 +403,10 @@ function draw() {
     ['Paid', paid.length],
     ['Pending', rows.filter(function(r) { return r.status === 'Pending'; }).length],
     ['Revenue', etb(paid.reduce(function(a, r) { return a + Number(r.amount); }, 0))]
-  ].map(function(x) {
-    return '<div><b>' + x[1] + '</b>' + x[0] + '</div>';
-  }).join('');
+  ].map(function(x) { return '<div><b>' + x[1] + '</b>' + x[0] + '</div>'; }).join('');
 }
 
-/* ============ LOAD DATA ============ */
+/* ===== LOAD ===== */
 function load() {
   api('/api/admin/registrations', { headers: H() })
     .then(function(data) {
@@ -500,7 +422,7 @@ function load() {
     });
 }
 
-/* ============ LOGIN ============ */
+/* ===== LOGIN ===== */
 document.getElementById('in').onclick = function() {
   hideMsg('lm');
   var pw = document.getElementById('pw').value;
@@ -536,12 +458,11 @@ document.getElementById('in').onclick = function() {
   });
 };
 
-/* ============ ENTER KEY ============ */
 document.getElementById('pw').onkeydown = function(e) {
   if (e.key === 'Enter') document.getElementById('in').click();
 };
 
-/* ============ VERIFY / REJECT ============ */
+/* ===== VERIFY / REJECT ===== */
 function act(id, a) {
   if (!confirm('Are you sure you want to ' + a + ' this registration?')) return;
   api('/api/admin/verify/' + id, {
@@ -574,14 +495,14 @@ document.getElementById('csv').onclick = function() {
     });
 };
 
-/* ============ TABS ============ */
+/* ===== TABS ===== */
 document.getElementById('tabbar').onclick = function(e) {
   var b = e.target.closest('button[data-t]');
   if (!b) return;
   document.querySelectorAll('#tabbar button[data-t]').forEach(function(x) {
     x.classList.toggle('on', x === b);
   });
-  ['regs','crs','tch','cat'].forEach(function(k) {
+  ['regs','crs','tch','cat','pwd'].forEach(function(k) {
     document.getElementById('pane-' + k).hidden = (k !== b.dataset.t);
   });
   if (b.dataset.t === 'crs') loadCourses();
@@ -589,7 +510,7 @@ document.getElementById('tabbar').onclick = function(e) {
   if (b.dataset.t === 'cat') loadCats();
 };
 
-/* ============ COURSES TAB ============ */
+/* ===== COURSES ===== */
 function loadMeta() {
   return api('/api/courses').then(function(d) {
     cats = d.categories;
@@ -606,12 +527,9 @@ function loadMeta() {
 
 function loadCourses() {
   var p = cats.length ? Promise.resolve() : loadMeta();
-  p.then(function() {
-    return api('/api/admin/courses', { headers: H() });
-  }).then(function(data) {
-    clist = data;
-    drawCourses();
-  }).catch(function(e) { showMsg('cmsg', e.message, 'err'); });
+  p.then(function() { return api('/api/admin/courses', { headers: H() }); })
+   .then(function(data) { clist = data; drawCourses(); })
+   .catch(function(e) { showMsg('cmsg', e.message, 'err'); });
 }
 
 function drawCourses() {
@@ -707,7 +625,7 @@ document.getElementById('csave').onclick = function() {
   }).catch(function(e) { showMsg('cmsg', e.message, 'err'); });
 };
 
-/* ============ TEACHERS TAB ============ */
+/* ===== TEACHERS ===== */
 function loadTeachers() {
   api('/api/admin/teachers', { headers: H() })
     .then(function(data) { tlist = data; drawTeachers(); })
@@ -776,7 +694,7 @@ document.getElementById('tsave').onclick = function() {
   }).catch(function(e) { showMsg('tmsg', e.message, 'err'); });
 };
 
-/* ============ CATEGORIES TAB ============ */
+/* ===== CATEGORIES ===== */
 function loadCats() {
   api('/api/admin/categories', { headers: H() })
     .then(function(data) { gcat = data; drawCats(); })
@@ -820,7 +738,35 @@ document.getElementById('gsave').onclick = function() {
   }).catch(function(e) { showMsg('gmsg', e.message, 'err'); });
 };
 
-/* ============ BOOT ============ */
+/* ===== CHANGE PASSWORD ===== */
+document.getElementById('cp_save').onclick = function() {
+  var cur = document.getElementById('cp_current').value;
+  var nw  = document.getElementById('cp_new').value;
+  var cf  = document.getElementById('cp_confirm').value;
+
+  hideMsg('cp_msg');
+
+  if (!cur) { showMsg('cp_msg', 'Enter current password.', 'err'); return; }
+  if (nw.length < 6) { showMsg('cp_msg', 'New password must be at least 6 characters.', 'err'); return; }
+  if (nw !== cf) { showMsg('cp_msg', 'New passwords do not match.', 'err'); return; }
+
+  api('/api/admin/change-password', {
+    method: 'POST',
+    headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ current: cur, new: nw })
+  }).then(function(r) {
+    showMsg('cp_msg', r.message || 'Password changed. Please log in again.', 'ok');
+    document.getElementById('cp_current').value = '';
+    document.getElementById('cp_new').value = '';
+    document.getElementById('cp_confirm').value = '';
+    setTimeout(function() {
+      sessionStorage.removeItem('bdcs_t');
+      location.reload();
+    }, 2200);
+  }).catch(function(e) { showMsg('cp_msg', e.message, 'err'); });
+};
+
+/* ===== BOOT ===== */
 if (T) load();
 </script>
 </body>
