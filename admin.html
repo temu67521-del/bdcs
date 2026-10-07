@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · BDCS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="app.js"></script>
+<script>renderHeadFoot()</script>
+
+<main>
+<h2 class="sec" style="margin-top:24px">School Admin</h2>
+
+<div class="panel" id="login" style="max-width:420px;margin:0 auto">
+  <h3 style="margin-top:0">Admin login</h3>
+  <label for="pw">Password</label>
+  <input id="pw" type="password" placeholder="Enter admin password">
+  <p><button type="button" class="btn wide" id="in">Log in</button></p>
+  <div id="lm" class="msg"></div>
+</div>
+
+<div id="dash" hidden>
+  <div class="tabs" id="tabbar">
+    <button type="button" class="on" data-t="regs">📋 Registrations</button>
+    <button type="button" data-t="crs">📚 Courses</button>
+    <button type="button" data-t="tch">👨‍🏫 Teachers</button>
+    <button type="button" data-t="cat">🏷️ Categories</button>
+    <button type="button" class="btn out-dark" id="out" style="margin-left:auto">Log out</button>
+  </div>
+
+  <section id="pane-regs">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <input id="q" placeholder="Search name, phone, course, reference…"
+             style="flex:1;min-width:220px;margin:0">
+      <button type="button" class="btn" id="csv" style="flex:none">Export CSV</button>
+    </div>
+    <div class="stats" id="st"></div>
+    <div class="wrap-table">
+      <table>
+        <thead><tr>
+          <th>Ref</th><th>Student</th><th>Phone</th><th>Course</th><th>Amount</th>
+          <th>Method</th><th>Status</th><th>Date</th><th>Transaction ID</th>
+          <th>Action</th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="pane-crs" hidden>
+    <div class="panel" style="margin-bottom:20px">
+      <h3 style="margin-top:0">Add / edit a course</h3>
+      <input type="hidden" id="f_id">
+      <div class="fgrid">
+        <div><label>Course name</label><input id="f_name"></div>
+        <div><label>Category</label><select id="f_cat"></select></div>
+        <div><label>Teacher</label><select id="f_t"></select></div>
+        <div><label>Course time</label><input id="f_dur" placeholder="3 Months"></div>
+        <div><label>Start date</label><input id="f_start" type="date"></div>
+        <div><label>End date</label><input id="f_end" type="date"></div>
+        <div><label>Certificate</label><input id="f_cert" value="Certificate of Completion"></div>
+        <div><label>Fee (ETB)</label><input id="f_fee" type="number" min="0" step="50" value="0"></div>
+        <div><label>Discount (ETB)</label><input id="f_disc" type="number" min="0" step="50" value="0"></div>
+        <div><label>Class time</label><input id="f_sch" placeholder="Mon/Wed 8:00-10:00"></div>
+        <div><label>Student quota</label><input id="f_max" type="number" min="1" value="20"></div>
+        <div><label>Level</label>
+          <select id="f_lvl"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+        </div>
+        <div><label>Visible</label>
+          <label style="font-weight:500"><input id="f_act" type="checkbox" checked> Show this course</label>
+        </div>
+      </div>
+      <label>Description</label>
+      <textarea id="f_desc" rows="2"></textarea>
+      <label>Syllabus (one topic per line)</label>
+      <textarea id="f_syl" rows="5"></textarea>
+      <p style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+        <button type="button" class="btn" id="csave">💾 Save course</button>
+        <button type="button" class="btn out-dark" id="cclear">➕ New course</button>
+      </p>
+      <div id="cmsg" class="msg"></div>
+    </div>
+    <div class="wrap-table">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>Course</th><th>Category</th><th>Teacher</th>
+          <th>Duration</th><th>Dates</th><th>Fee</th><th>Discount</th><th>Final</th>
+          <th>Students</th><th>Level</th><th>Shown</th><th>Action</th>
+        </tr></thead>
+        <tbody id="ctb"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="pane-tch" hidden>
+    <div class="panel" style="margin-bottom:20px">
+      <h3 style="margin-top:0">Add / edit a teacher</h3>
+      <input type="hidden" id="t_id">
+      <div class="fgrid">
+        <div><label>Full name</label><input id="t_name"></div>
+        <div><label>Title</label><input id="t_title" placeholder="Senior Instructor, MSc"></div>
+        <div><label>Photo URL</label><input id="t_photo" placeholder="https://…"></div>
+      </div>
+      <label>Short bio</label>
+      <textarea id="t_bio" rows="2"></textarea>
+      <p style="display:flex;gap:10px;margin-top:16px">
+        <button type="button" class="btn" id="tsave">💾 Save teacher</button>
+        <button type="button" class="btn out-dark" id="tclear">➕ New teacher</button>
+      </p>
+      <div id="tmsg" class="msg"></div>
+    </div>
+    <div class="wrap-table">
+      <table>
+        <thead><tr>
+          <th>Photo</th><th>Name</th><th>Title</th><th>Bio</th><th>Courses</th><th>Action</th>
+        </tr></thead>
+        <tbody id="ttb"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="pane-cat" hidden>
+    <div class="panel" style="margin-bottom:20px">
+      <h3 style="margin-top:0">Add a category</h3>
+      <div class="fgrid">
+        <div><label>Name</label><input id="g_name" placeholder="e.g. Design"></div>
+        <div><label>Slug (URL)</label><input id="g_slug" placeholder="design"></div>
+        <div><label>Icon (emoji)</label><input id="g_icon" value="📘"></div>
+      </div>
+      <p style="margin-top:16px"><button type="button" class="btn" id="gsave">💾 Save category</button></p>
+      <div id="gmsg" class="msg"></div>
+    </div>
+    <div class="wrap-table">
+      <table>
+        <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Action</th></tr></thead>
+        <tbody id="gtb"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+</main>
+
+<script>
+let T = sessionStorage.getItem('bdcs_t');
+let rows = [];
+let cats = [], tchs = [], clist = [], tlist = [], gcat = [];
+
+const H = () => ({ 'x-admin-token': T });
+
+function showMsg(id, txt, cls) {
+  const el = $('#' + id);
+  el.className = 'msg show ' + (cls || 'info');
+  el.textContent = txt;
+}
+function hideMsg(id) { $('#' + id).className = 'msg'; }
+
+/* ============ REGISTRATIONS ============ */
+function draw() {
+  const q = ($('#q').value || '').toLowerCase();
+  const list = rows.filter(r => Object.values(r).join(' ').toLowerCase().includes(q));
+
+  $('#tb').innerHTML = list.map(r => `<tr>
+    <td><b>${esc(r.tx_ref)}</b></td>
+    <td>${esc(r.full_name)}</td>
+    <td>${esc(r.phone)}</td>
+    <td>${esc(r.course)}</td>
+    <td>${etb(r.amount)}</td>
+    <td>${esc(r.payment_method)}</td>
+    <td><span class="badge-status ${esc(r.status)}">${esc(r.status)}</span></td>
+    <td>${new Date(r.created_at).toLocaleDateString()}</td>
+    <td>${esc(r.payer_ref || '—')}</td>
+    <td>${r.status === 'Pending'
+      ? `<button type="button" class="mini ok" onclick="act(${Number(r.id)},'verify')">✔ Verify</button>
+         <button type="button" class="mini no" onclick="act(${Number(r.id)},'reject')">✘ Reject</button>`
+      : '—'}</td>
+  </tr>`).join('') || '<tr><td colspan="10">No registrations found.</td></tr>';
+
+  const paid = rows.filter(r => r.status === 'Paid');
+  $('#st').innerHTML = [
+    ['Total students', rows.length],
+    ['Paid', paid.length],
+    ['Pending', rows.filter(r => r.status === 'Pending').length],
+    ['Revenue', etb(paid.reduce((a, r) => a + Number(r.amount), 0))],
+  ].map(x => `<div><b>${x[1]}</b>${x[0]}</div>`).join('');
+}
+
+async function load() {
+  try {
+    rows = await api('/api/admin/registrations', { headers: H() });
+  } catch (e) {
+    sessionStorage.removeItem('bdcs_t');
+    T = null;
+    return;
+  }
+  $('#login').hidden = true;
+  $('#dash').hidden = false;
+  draw();
+}
+
+$('#in').onclick = async () => {
+  hideMsg('lm');
+  try {
+    const d = await api('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', password: $('#pw').value }),
+    });
+    T = d.token;
+    sessionStorage.setItem('bdcs_t', T);
+    load();
+  } catch (e) {
+    showMsg('lm', e.message, 'err');
+  }
+};
+
+async function act(id, a) {
+  if (!confirm(`Are you sure you want to ${a} this registration?`)) return;
+  try {
+    await api('/api/admin/verify/' + id, {
+      method: 'POST',
+      headers: { ...H(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: a }),
+    });
+    rows = await api('/api/admin/registrations', { headers: H() });
+    draw();
+  } catch (e) { alert(e.message); }
+}
+
+$('#q').oninput = draw;
+
+$('#out').onclick = async () => {
+  try { await api('/api/admin/logout', { method: 'POST', headers: H() }); } catch (_) {}
+  sessionStorage.removeItem('bdcs_t');
+  location.reload();
+};
+
+$('#csv').onclick = async () => {
+  const res = await fetch('api.php?route=/api/admin/export.csv', { headers: H() });
+  if (!res.ok) return alert('Could not export. Please log in again.');
+  const t = await res.text();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'bdcs-registrations.csv';
+  a.click();
+};
+
+/* ============ TABS ============ */
+$('#tabbar').onclick = e => {
+  const b = e.target.closest('button[data-t]');
+  if (!b) return;
+  $$('#tabbar button[data-t]').forEach(x => x.classList.toggle('on', x === b));
+  ['regs','crs','tch','cat'].forEach(k => $('#pane-' + k).hidden = (k !== b.dataset.t));
+  if (b.dataset.t === 'crs') loadCourses();
+  if (b.dataset.t === 'tch') loadTeachers();
+  if (b.dataset.t === 'cat') loadCats();
+};
+
+/* ============ COURSES ============ */
+async function loadMeta() {
+  const d = await api('/api/courses');
+  cats = d.categories;
+  tchs = await api('/api/teachers');
+  $('#f_cat').innerHTML = cats.map(c => `<option value="${c.id}">${esc(c.icon)} ${esc(c.name)}</option>`).join('');
+  $('#f_t').innerHTML = '<option value="">— no teacher yet —</option>' +
+    tchs.map(t => `<option value="${t.id}">${esc(t.full_name)}</option>`).join('');
+}
+
+async function loadCourses() {
+  try {
+    if (!cats.length) await loadMeta();
+    clist = await api('/api/admin/courses', { headers: H() });
+    drawCourses();
+  } catch (e) { showMsg('cmsg', e.message, 'err'); }
+}
+
+function drawCourses() {
+  $('#ctb').innerHTML = clist.map(c => {
+    const final = c.final_price || c.fee - c.discount;
+    const dates = (c.start_date || c.end_date)
+      ? `${fmtDate(c.start_date)} → ${fmtDate(c.end_date)}` : '—';
+    return `<tr>
+      <td><b>#${c.id}</b></td>
+      <td>${esc(c.name)}</td>
+      <td>${esc(c.category_icon || '')} ${esc(c.category_name || '—')}</td>
+      <td>${esc(c.teacher_name || '—')}</td>
+      <td>${esc(c.duration || '—')}</td>
+      <td>${esc(dates)}</td>
+      <td>${etb(c.fee)}</td>
+      <td>${c.discount > 0 ? '− ' + etb(c.discount) : '—'}</td>
+      <td><b style="color:var(--primary)">${etb(final)}</b></td>
+      <td>${c.enrolled}/${c.max_students}</td>
+      <td>${esc(c.level)}</td>
+      <td><span class="badge-status ${c.active ? 'Paid' : 'Failed'}">${c.active ? 'Shown' : 'Hidden'}</span></td>
+      <td>
+        <button type="button" class="mini neutral" onclick="editCourse(${c.id})">✎ Edit</button>
+        <button type="button" class="mini no" onclick="delCourse(${c.id})">🗑 Delete</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="13">No courses yet.</td></tr>';
+}
+
+function clearCourse() {
+  ['f_id','f_name','f_fee','f_disc','f_dur','f_start','f_end','f_sch','f_desc','f_syl']
+    .forEach(i => $('#' + i).value = '');
+  $('#f_cert').value = 'Certificate of Completion';
+  $('#f_max').value = 20;
+  $('#f_lvl').value = 'Beginner';
+  $('#f_act').checked = true;
+  if (cats.length) $('#f_cat').value = cats[0].id;
+  $('#f_t').value = '';
+}
+
+function editCourse(id) {
+  const c = clist.find(x => x.id === id);
+  if (!c) return;
+  $('#f_id').value = c.id;
+  $('#f_name').value = c.name;
+  $('#f_cat').value = c.category_id;
+  $('#f_t').value = c.teacher_id || '';
+  $('#f_fee').value = Number(c.fee);
+  $('#f_disc').value = Number(c.discount || 0);
+  $('#f_dur').value = c.duration || '';
+  $('#f_start').value = c.start_date || '';
+  $('#f_end').value = c.end_date || '';
+  $('#f_cert').value = c.certificate || 'Certificate of Completion';
+  $('#f_sch').value = c.schedule || '';
+  $('#f_max').value = c.max_students;
+  $('#f_lvl').value = c.level;
+  $('#f_act').checked = !!c.active;
+  $('#f_desc').value = c.description || '';
+  $('#f_syl').value = c.syllabus || '';
+  showMsg('cmsg', `Editing "${c.name}" (#${c.id}).`, 'info');
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function delCourse(id) {
+  const c = clist.find(x => x.id === id);
+  if (!confirm(`Delete "${c.name}"?`)) return;
+  try {
+    const r = await api('/api/admin/courses/' + id, { method: 'DELETE', headers: H() });
+    alert(r.message || 'Done.'); await loadCourses();
+  } catch (e) { alert(e.message); }
+}
+
+$('#cclear').onclick = () => { clearCourse(); hideMsg('cmsg'); };
+
+$('#csave').onclick = async () => {
+  const id = $('#f_id').value;
+  const body = {
+    name: $('#f_name').value,
+    category_id: Number($('#f_cat').value),
+    teacher_id: $('#f_t').value ? Number($('#f_t').value) : null,
+    fee: Number($('#f_fee').value),
+    discount: Number($('#f_disc').value),
+    duration: $('#f_dur').value,
+    start_date: $('#f_start').value,
+    end_date: $('#f_end').value,
+    certificate: $('#f_cert').value,
+    schedule: $('#f_sch').value,
+    max_students: Number($('#f_max').value),
+    level: $('#f_lvl').value,
+    active: $('#f_act').checked,
+    description: $('#f_desc').value,
+    syllabus: $('#f_syl').value,
+  };
+  try {
+    await api(id ? '/api/admin/courses/' + id : '/api/admin/courses', {
+      method: id ? 'PUT' : 'POST',
+      headers: { ...H(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    clearCourse(); await loadCourses();
+    showMsg('cmsg', id ? 'Course updated.' : 'Course added.', 'ok');
+  } catch (e) { showMsg('cmsg', e.message, 'err'); }
+};
+
+/* ============ TEACHERS ============ */
+async function loadTeachers() {
+  try { tlist = await api('/api/admin/teachers', { headers: H() }); drawTeachers(); }
+  catch (e) { showMsg('tmsg', e.message, 'err'); }
+}
+
+function drawTeachers() {
+  $('#ttb').innerHTML = tlist.map(t => `<tr>
+    <td><img src="${esc(t.photo_url || AVATAR + encodeURIComponent(t.full_name))}"
+             style="width:40px;height:40px;border-radius:50%;object-fit:cover" alt=""></td>
+    <td>${esc(t.full_name)}</td>
+    <td>${esc(t.title || '—')}</td>
+    <td>${esc((t.bio || '').slice(0, 100))}${(t.bio || '').length > 100 ? '…' : ''}</td>
+    <td>${t.course_count || 0}</td>
+    <td>
+      <button type="button" class="mini neutral" onclick="editTeacher(${t.id})">✎ Edit</button>
+      <button type="button" class="mini no" onclick="delTeacher(${t.id})">🗑 Delete</button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="6">No teachers yet.</td></tr>';
+}
+
+function clearTeacher() { ['t_id','t_name','t_title','t_photo','t_bio'].forEach(i => $('#' + i).value = ''); }
+
+function editTeacher(id) {
+  const t = tlist.find(x => x.id === id); if (!t) return;
+  $('#t_id').value = t.id; $('#t_name').value = t.full_name;
+  $('#t_title').value = t.title || ''; $('#t_photo').value = t.photo_url || '';
+  $('#t_bio').value = t.bio || '';
+  showMsg('tmsg', `Editing "${t.full_name}".`, 'info');
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function delTeacher(id) {
+  const t = tlist.find(x => x.id === id);
+  if (!confirm(`Delete teacher "${t.full_name}"?`)) return;
+  try {
+    await api('/api/admin/teachers/' + id, { method: 'DELETE', headers: H() });
+    cats = []; await loadTeachers(); await loadMeta();
+  } catch (e) { alert(e.message); }
+}
+
+$('#tclear').onclick = () => { clearTeacher(); hideMsg('tmsg'); };
+
+$('#tsave').onclick = async () => {
+  const id = $('#t_id').value;
+  const body = {
+    full_name: $('#t_name').value, title: $('#t_title').value,
+    photo_url: $('#t_photo').value, bio: $('#t_bio').value,
+  };
+  try {
+    await api(id ? '/api/admin/teachers/' + id : '/api/admin/teachers', {
+      method: id ? 'PUT' : 'POST',
+      headers: { ...H(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    clearTeacher(); cats = []; await loadTeachers(); await loadMeta();
+    showMsg('tmsg', id ? 'Teacher updated.' : 'Teacher added.', 'ok');
+  } catch (e) { showMsg('tmsg', e.message, 'err'); }
+};
+
+/* ============ CATEGORIES ============ */
+async function loadCats() {
+  try { gcat = await api('/api/admin/categories', { headers: H() }); drawCats(); }
+  catch (e) { showMsg('gmsg', e.message, 'err'); }
+}
+
+function drawCats() {
+  $('#gtb').innerHTML = gcat.map(c => `<tr>
+    <td style="font-size:1.5rem">${esc(c.icon)}</td>
+    <td>${esc(c.name)}</td>
+    <td><code>${esc(c.slug)}</code></td>
+    <td><button type="button" class="mini no" onclick="delCat(${c.id})">🗑 Delete</button></td>
+  </tr>`).join('') || '<tr><td colspan="4">No categories yet.</td></tr>';
+}
+
+async function delCat(id) {
+  if (!confirm('Delete this category?')) return;
+  try {
+    await api('/api/admin/categories/' + id, { method: 'DELETE', headers: H() });
+    cats = []; await loadCats(); await loadMeta();
+  } catch (e) { alert(e.message); }
+}
+
+$('#gsave').onclick = async () => {
+  const body = {
+    name: $('#g_name').value,
+    slug: $('#g_slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
+    icon: $('#g_icon').value || '📘',
+  };
+  try {
+    await api('/api/admin/categories', {
+      method: 'POST',
+      headers: { ...H(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    $('#g_name').value = ''; $('#g_slug').value = ''; $('#g_icon').value = '📘';
+    cats = []; await loadCats(); await loadMeta();
+    showMsg('gmsg', 'Category added.', 'ok');
+  } catch (e) { showMsg('gmsg', e.message, 'err'); }
+};
+
+/* ============ BOOT ============ */
+if (T) load();
+</script>
+</body>
+</html>
