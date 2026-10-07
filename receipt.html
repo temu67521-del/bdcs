@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipt · BDCS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="app.js"></script>
+<script>renderHeadFoot()</script>
+<main>
+<div class="receipt-box" id="box">Loading…</div>
+</main>
+<script>
+const ref = new URLSearchParams(location.search).get('ref');
+let currentStatus = null;
+
+function renderReceipt(r) {
+  document.getElementById('box').innerHTML = `
+    <h1>🎓 Registration Receipt</h1>
+    <p style="text-align:center;color:var(--muted);margin-top:-10px">Bahir Dar Computer School</p>
+    <div class="row"><span>Reference</span><b>${esc(r.tx_ref)}</b></div>
+    <div class="row"><span>Student</span><b>${esc(r.full_name)}</b></div>
+    <div class="row"><span>Phone</span><b>${esc(r.phone)}</b></div>
+    <div class="row"><span>Email</span><b>${esc(r.email)}</b></div>
+    <div class="row"><span>Course</span><b>${esc(r.course)}</b></div>
+    <div class="row"><span>Course time</span><b>${esc(r.duration)}</b></div>
+    <div class="row"><span>Class time</span><b>${esc(r.schedule || '—')}</b></div>
+    <div class="row"><span>Payment method</span><b>${esc(r.payment_method)}</b></div>
+    <div class="row"><span>Amount</span><b>${etb(r.amount)}</b></div>
+    <div class="row"><span>Date</span><b>${new Date(r.created_at).toLocaleString()}</b></div>
+    <div class="row"><span>Status</span>
+      <b><span class="badge-status ${esc(r.status)}">${esc(r.status)}</span></b>
+    </div>
+    ${r.status === 'Pending' ? '<p class="msg info show" style="margin-top:20px">⏳ Waiting for admin to verify your payment.</p>' : ''}
+    ${r.status === 'Paid' ? '<p class="msg ok show" style="margin-top:20px">✅ Congratulations! Your payment has been verified.</p>' : ''}
+    ${r.status === 'Failed' ? '<p class="msg err show" style="margin-top:20px">❌ Payment rejected. Contact school office.</p>' : ''}
+    <p style="text-align:center;margin-top:26px">
+      <button class="btn" onclick="window.print()">🖨 Print receipt</button>
+      <button class="btn out-dark" onclick="fetchStatus()" style="margin-left:10px">🔄 Check status</button>
+      <a class="btn out-dark" href="index.html" style="margin-left:10px">← Home</a>
+    </p>`;
+}
+
+async function fetchStatus(silent = false) {
+  try {
+    const r = await api('/api/receipt/' + ref);
+    if (silent && currentStatus === r.status) return;
+    currentStatus = r.status;
+    renderReceipt(r);
+  } catch (e) {
+    if (!silent) {
+      document.getElementById('box').innerHTML = '<h2 style="color:#ef4444;text-align:center">Receipt not found</h2><p style="text-align:center">'+esc(e.message)+'</p>';
+    }
+  }
+}
+
+if (!ref) {
+  document.getElementById('box').innerHTML = '<h2 style="color:#ef4444;text-align:center">No reference number provided.</h2>';
+} else {
+  fetchStatus(false);
+  setInterval(() => fetchStatus(true), 15000);
+}
+</script>
+</body>
+</html>
