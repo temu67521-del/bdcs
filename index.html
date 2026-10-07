@@ -12,10 +12,7 @@
 
 <section class="hero big">
   <h1>Learn Computer Skills in Bahir Dar</h1>
-  <p>From typing and MS Office to Java, Python, web development,
-     computer maintenance and software installation — taught by
-     experienced teachers. Pick a course, register online, and your
-     seat is confirmed once the school verifies your payment.</p>
+  <p>From typing and MS Office to Java, Python, web development, computer maintenance and software installation — taught by experienced teachers.</p>
   <div class="cta">
     <a class="btn gold" href="#courses">See courses</a>
     <a class="btn out" href="#register">Register now</a>
@@ -26,9 +23,7 @@
 
 <main>
   <h2 class="sec" id="courses" style="margin-top:0">Our courses</h2>
-  <div class="tabs" id="tabs">
-    <button class="on" data-f="">All courses</button>
-  </div>
+  <div class="tabs" id="tabs"></div>
   <div class="grid" id="grid">Loading courses…</div>
 
   <h2 class="sec" id="teachers">Our teachers</h2>
@@ -38,27 +33,21 @@
   <div class="reg">
     <section class="panel">
       <label for="name">Full name</label>
-      <input id="name" autocomplete="name">
-
+      <input id="name">
       <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email">
-
+      <input id="email" type="email">
       <label for="phone">Phone (09XXXXXXXX)</label>
-      <input id="phone" inputmode="numeric" maxlength="10" autocomplete="tel">
-
+      <input id="phone" maxlength="10">
       <label for="course">Course</label>
-      <select id="course"><option value="">Choose a course</option></select>
+      <select id="course"></select>
       <p><b>Amount to pay:</b> <span id="fee">—</span></p>
-
       <label>Payment method</label>
       <div class="pay">
         <label><input type="radio" name="pm" value="Telebirr" checked> Telebirr</label>
         <label><input type="radio" name="pm" value="CBE Birr"> CBE Birr</label>
       </div>
-
       <label for="ref">Transaction ID from your payment</label>
-      <input id="ref" placeholder="e.g. CE12345XYZ">
-
+      <input id="ref">
       <p><button type="button" class="btn wide" id="go">Register</button></p>
       <div id="msg" class="msg"></div>
     </section>
@@ -66,15 +55,8 @@
   </div>
 
   <h2 class="sec">Find us</h2>
-  <iframe
-    src="https://www.google.com/maps?q=11.5890604,37.3857675&z=16&output=embed"
-    width="100%"
-    height="450"
-    style="border:0;border-radius:16px;"
-    allowfullscreen=""
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade">
-  </iframe>
+  <iframe src="https://www.google.com/maps?q=11.5890604,37.3857675&z=16&output=embed"
+    width="100%" height="450" style="border:0;border-radius:16px"></iframe>
 </main>
 
 <script>
@@ -82,137 +64,108 @@ let courses = [], pinfo = {}, cats = [];
 
 function show(f) {
   const list = f ? courses.filter(c => c.category === f) : courses;
-  $('#grid').innerHTML = list.map(card).join('') || '<p>No courses yet.</p>';
+  document.getElementById("grid").innerHTML = list.map(card).join("") || "<p>No courses yet.</p>";
 }
 
 function buildTabs() {
-  const bar = $('#tabs');
-  bar.innerHTML = `<button class="on" data-f="">All courses</button>` +
-    cats.map(c => `<button data-f="${esc(c.slug)}">${esc(c.icon)} ${esc(c.name)}</button>`).join('');
+  const bar = document.getElementById("tabs");
+  bar.innerHTML = '<button class="on" data-f="">All courses</button>' +
+    cats.map(c => '<button data-f="'+c.slug+'">'+c.icon+" "+c.name+"</button>").join("");
   bar.onclick = e => {
-    const b = e.target.closest('button[data-f]');
+    const b = e.target.closest("button[data-f]");
     if (!b) return;
-    $$('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+    bar.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
     show(b.dataset.f);
   };
 }
 
-const payBox = () => {
-  const c = courses.find(x => x.id == $('#course').value);
-  const m = document.querySelector('[name=pm]:checked').value;
-  const n = pinfo[m] || 'the school account (ask the office)';
+function payBox() {
+  const c = courses.find(x => x.id == document.getElementById("course").value);
+  const m = document.querySelector("[name=pm]:checked").value;
+  const n = pinfo[m] || "the school account";
   const price = c ? (c.final_price || c.fee - c.discount) : null;
-  $('#paybox').innerHTML = `<h3>How to pay</h3><ol>
-    <li>Send <b>${price ? etb(price) : 'the course fee'}</b> by <b>${esc(m)}</b> to <b>${esc(n)}</b>.</li>
-    <li>Copy the transaction ID from your payment message.</li>
-    <li>Enter the transaction ID and press Register.</li>
-    <li>The school admin checks your payment and confirms your seat.</li>
-  </ol>`;
-};
+  document.getElementById("paybox").innerHTML = "<h3>How to pay</h3><ol>"+
+    "<li>Send <b>"+(price ? etb(price) : "the course fee")+"</b> by <b>"+m+"</b> to <b>"+n+"</b>.</li>"+
+    "<li>Copy the transaction ID from your payment message.</li>"+
+    "<li>Enter the transaction ID and press Register.</li>"+
+    "<li>The school admin checks your payment and confirms your seat.</li></ol>";
+}
 
-const upd = () => {
-  const c = courses.find(x => x.id == $('#course').value);
-  if (!c) { $('#fee').textContent = '—'; payBox(); return; }
+function upd() {
+  const c = courses.find(x => x.id == document.getElementById("course").value);
+  if (!c) { document.getElementById("fee").textContent = "—"; payBox(); return; }
   const final = c.final_price || c.fee - c.discount;
-  $('#fee').textContent = c.discount > 0
-    ? `${etb(final)} (discounted from ${etb(c.fee)})`
-    : etb(final);
+  document.getElementById("fee").textContent = c.discount > 0
+    ? etb(final)+" (discounted from "+etb(c.fee)+")" : etb(final);
   payBox();
-};
+}
 
-$('#course').onchange = upd;
-document.querySelectorAll('[name=pm]').forEach(r => r.onchange = payBox);
+document.getElementById("course").onchange = upd;
+document.querySelectorAll("[name=pm]").forEach(r => r.onchange = payBox);
 
-api('/api/pay-info').then(d => { pinfo = d; payBox(); }).catch(() => {});
+api("/api/pay-info").then(d => { pinfo = d; payBox(); }).catch(()=>{});
 
-api('/api/teachers').then(t => {
-  $('#teachersGrid').innerHTML = t.map(x => `
-    <div class="tcard">
-      <img src="${esc(x.photo_url || AVATAR + encodeURIComponent(x.full_name))}" alt="">
-      <h3>${esc(x.full_name)}</h3>
-      <small>${esc(x.title)}</small>
-      <p>${esc(x.bio)}</p>
-    </div>`).join('');
+api("/api/teachers").then(t => {
+  document.getElementById("teachersGrid").innerHTML = t.map(x =>
+    '<div class="tcard"><img src="'+(x.photo_url || AVATAR + encodeURIComponent(x.full_name))+'"><h3>'+x.full_name+'</h3><small>'+x.title+'</small><p>'+(x.bio||"")+'</p></div>'
+  ).join("");
   window._tc = t.length;
   strip();
-}).catch(() => {});
+}).catch(()=>{});
 
 function strip() {
   if (!courses.length) return;
   const open = courses.reduce((a, c) => a + Math.max(c.max_students - c.enrolled, 0), 0);
   const low = Math.min(...courses.map(c => c.final_price || c.fee - c.discount));
-  $('#strip').innerHTML = [
-    [courses.length, 'Courses'],
-    [cats.length, 'Categories'],
-    [window._tc || '—', 'Expert teachers'],
-    [open, 'Open seats'],
-    [etb(low), 'Lowest price'],
-  ].map(x => `<div><b>${x[0]}</b>${x[1]}</div>`).join('');
+  document.getElementById("strip").innerHTML = [
+    [courses.length, "Courses"],
+    [cats.length, "Categories"],
+    [window._tc || "—", "Teachers"],
+    [open, "Open seats"],
+    [etb(low), "Lowest price"]
+  ].map(x => "<div><b>"+x[0]+"</b>"+x[1]+"</div>").join("");
 }
 
-api('/api/courses').then(d => {
-  courses = d.courses;
-  cats    = d.categories;
-  buildTabs();
-  show('');
-  strip();
-  $('#course').innerHTML = '<option value="">Choose a course</option>' +
+api("/api/courses").then(d => {
+  courses = d.courses; cats = d.categories;
+  buildTabs(); show(""); strip();
+  document.getElementById("course").innerHTML = '<option value="">Choose a course</option>' +
     courses.map(c => {
       const final = c.final_price || c.fee - c.discount;
-      return `<option value="${c.id}">#${c.id} · ${esc(c.name)} — ${etb(final)}</option>`;
-    }).join('');
-  const id = new URLSearchParams(location.search).get('course');
-  if (id) { $('#course').value = id; upd(); }
-}).catch(e => $('#grid').textContent = 'Could not load courses: ' + e.message);
+      return '<option value="'+c.id+'">#'+c.id+' · '+c.name+' — '+etb(final)+'</option>';
+    }).join("");
+  const id = new URLSearchParams(location.search).get("course");
+  if (id) { document.getElementById("course").value = id; upd(); }
+}).catch(e => document.getElementById("grid").textContent = "Error: " + e.message);
 
-$('#go').onclick = async () => {
-  const m = $('#msg'); m.className = 'msg';
-
-  if (!/^09\d{8}$/.test($('#phone').value)) {
-    m.className = 'msg err show';
-    m.textContent = 'Phone must look like 09XXXXXXXX.';
-    return;
+document.getElementById("go").onclick = async () => {
+  const m = document.getElementById("msg"); m.className = "msg";
+  if (!/^09\d{8}$/.test(document.getElementById("phone").value)) {
+    m.className = "msg err show"; m.textContent = "Phone must look like 09XXXXXXXX."; return;
   }
-  if (!$('#course').value) {
-    m.className = 'msg err show';
-    m.textContent = 'Please choose a course.';
-    return;
+  if (!document.getElementById("course").value) {
+    m.className = "msg err show"; m.textContent = "Please choose a course."; return;
   }
-  if (!$('#ref').value.trim()) {
-    m.className = 'msg err show';
-    m.textContent = 'Please enter the transaction ID from your payment.';
-    return;
+  if (!document.getElementById("ref").value.trim()) {
+    m.className = "msg err show"; m.textContent = "Please enter the transaction ID."; return;
   }
-
   const fd = new FormData();
-  fd.append('full_name',        $('#name').value);
-  fd.append('email',            $('#email').value);
-  fd.append('phone',            $('#phone').value);
-  fd.append('course_id',        $('#course').value);
-  fd.append('payment_method',   document.querySelector('[name=pm]:checked').value);
-  fd.append('payer_ref',        $('#ref').value);
+  fd.append("full_name", document.getElementById("name").value);
+  fd.append("email", document.getElementById("email").value);
+  fd.append("phone", document.getElementById("phone").value);
+  fd.append("course_id", document.getElementById("course").value);
+  fd.append("payment_method", document.querySelector("[name=pm]:checked").value);
+  fd.append("payer_ref", document.getElementById("ref").value);
 
-  $('#go').disabled = true;
-  m.className = 'msg info show';
-  m.textContent = 'Sending your registration…';
-
+  document.getElementById("go").disabled = true;
+  m.className = "msg info show"; m.textContent = "Sending…";
   try {
-    const d = await api('/api/register', { method: 'POST', body: fd });
-    if (!d.ref) throw new Error('Invalid server response.');
-    m.className = 'msg ok show';
-    m.innerHTML = `${esc(d.note)}<br>
-      <b>Your reference:</b>
-      <span style="font-family:monospace;font-size:1.1em;background:#fff;padding:2px 8px;border-radius:6px">${esc(d.ref)}</span><br>
-      <small style="display:block;margin-top:6px;color:#166534">
-        📌 Save this reference. You can check your status anytime at
-        <a href="status.html" style="color:#166534;text-decoration:underline">status.html</a>.
-      </small>`;
-    setTimeout(() => location.href = d.receipt_url, 2600);
-  } catch (e) {
-    m.className = 'msg err show';
-    m.textContent = e.message;
-  }
-  $('#go').disabled = false;
+    const d = await api("/api/register", { method: "POST", body: fd });
+    m.className = "msg ok show";
+    m.innerHTML = "Registered! Ref: <b>"+d.ref+"</b><br>Redirecting to receipt…";
+    setTimeout(() => location.href = d.receipt_url, 2500);
+  } catch (e) { m.className = "msg err show"; m.textContent = e.message; }
+  document.getElementById("go").disabled = false;
 };
 </script>
 </body>
