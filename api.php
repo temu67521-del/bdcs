@@ -46,13 +46,16 @@ try {
     exit;
 }
 
-// ---------- Ensure admin exists (password: 12345678) ----------
+// ---------- Admin credentials (from env or defaults) ----------
+$ADMIN_USERNAME = getenv('ADMIN_USERNAME') ?: 'admin';
+$ADMIN_PASSWORD = getenv('ADMIN_PASSWORD') ?: '12345678';
+
 $stmt = $pdo->query("SELECT COUNT(*) AS n FROM admins");
-$row = $stmt->fetch();
+$row  = $stmt->fetch();
 if ((int)$row['n'] === 0) {
-    $hash = password_hash('12345678', PASSWORD_DEFAULT);
+    $hash = password_hash($ADMIN_PASSWORD, PASSWORD_DEFAULT);
     $pdo->prepare("INSERT INTO admins(username, password_hash) VALUES(?, ?)")
-        ->execute(['admin', $hash]);
+        ->execute([$ADMIN_USERNAME, $hash]);
 }
 
 function json_out($data, $code = 200) { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE); exit; }
@@ -201,7 +204,7 @@ if ($method === 'GET' && preg_match('#^/api/receipt/(.+)$#', $route, $m)) {
 // ==================== ADMIN AUTH ====================
 if ($method === 'POST' && $route === '/api/admin/login') {
     $stmt = $pdo->prepare("SELECT password_hash FROM admins WHERE username = ?");
-    $stmt->execute([$input['username'] ?? 'admin']);
+    $stmt->execute([$input['username'] ?? $ADMIN_USERNAME]);
     $a = $stmt->fetch();
     if (!$a || !password_verify($input['password'] ?? '', $a['password_hash'])) {
         err('Wrong username or password', 401);
@@ -222,6 +225,29 @@ if ($method === 'POST' && $route === '/api/admin/logout') {
     unset($tokens[$token]);
     save_tokens($tokens);
     json_out(['ok' => true]);
+}
+
+// ==================== CHANGE PASSWORD ====================
+if ($method === 'POST' && $route === '/api/admin/change-password') {
+    require_auth();
+    $current = $input['current'] ?? '';
+    $new     = $input['new']     ?? '';
+
+    if (strlen($new) < 6) err('New password must be at least 6 characters.');
+
+    $stmt = $pdo->prepare("SELECT id, password_hash FROM admins WHERE username = ?");
+    $stmt->execute([$ADMIN_USERNAME]);
+    $a = $stmt->fetch();
+
+    if (!$a || !password_verify($current, $a['password_hash'])) {
+        err('Current password is wrong.', 401);
+    }
+
+    $newHash = password_hash($new, PASSWORD_DEFAULT);
+    $pdo->prepare("UPDATE admins SET password_hash = ? WHERE id = ?")
+        ->execute([$newHash, $a['id']]);
+
+    json_out(['ok' => true, 'message' => 'Password changed. Please log in again.']);
 }
 
 // ==================== ADMIN REGISTRATIONS ====================
@@ -289,8 +315,7 @@ if ($method === 'POST' && preg_match('#^/api/admin/verify/(\d+)$#', $route, $m))
         $subject = 'BDCS — Payment verified for ' . $info['course'];
         $message = "Dear {$info['full_name']},\n\n"
                  . "Your payment for the course \"{$info['course']}\" has been verified.\n"
-                 . "Your seat is confirmed. Welcome to Bahir Dar Computer School!\n\n"
-                 . "Bahir Dar Computer School";
+                 . "Your seat is confirmed. Welcome to Bahir Dar Computer School!\n\n";
         $headers = 'From: noreply@bdcs.local' . "\r\n" .
                    'Reply-To: noreply@bdcs.local' . "\r\n" .
                    'X-Mailer: PHP/' . phpversion();
@@ -373,7 +398,7 @@ if ($method === 'DELETE' && preg_match('#^/api/admin/courses/(\d+)$#', $route, $
     $stmt->execute([$id]);
     if ((int)$stmt->fetch()['n'] > 0) {
         $pdo->prepare("UPDATE courses SET active = FALSE WHERE id = ?")->execute([$id]);
-        json_out(['ok' => true, 'message' => 'Course has registrations — it was hidden instead of deleted.']);
+        json_out(['ok' => true, 'message' => 'Course has registrations — hidden instead of deleted.']);
     }
     $pdo->prepare("DELETE FROM courses WHERE id = ?")->execute([$id]);
     json_out(['ok' => true, 'message' => 'Course deleted.']);
