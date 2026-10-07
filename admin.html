@@ -3,25 +3,282 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin · BDCS</title>
+<title>Admin · Bahir Dar Computer School</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  /* ============ 3D BACKGROUND ============ */
+  #bg3d {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #0b3d91 0%, #082a66 50%, #041a3d 100%);
+    overflow: hidden;
+    perspective: 800px;
+  }
+  #bg3d::before,
+  #bg3d::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .55;
+    animation: float 20s ease-in-out infinite;
+  }
+  #bg3d::before {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #1e88e5, transparent 70%);
+    top: -100px; left: -100px;
+  }
+  #bg3d::after {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #ffb300, transparent 70%);
+    bottom: -150px; right: -150px;
+    animation-delay: -10s;
+  }
+
+  /* Floating 3D cubes */
+  .cube {
+    position: absolute;
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 8px;
+    transform-style: preserve-3d;
+    animation: rotate3d 25s linear infinite;
+  }
+  .cube:nth-child(1) { top: 15%; left: 10%; animation-duration: 28s; }
+  .cube:nth-child(2) { top: 60%; left: 80%; animation-duration: 35s; width: 80px; height: 80px; }
+  .cube:nth-child(3) { top: 80%; left: 20%; animation-duration: 22s; width: 40px; height: 40px; }
+  .cube:nth-child(4) { top: 25%; left: 65%; animation-duration: 30s; width: 50px; height: 50px; }
+  .cube:nth-child(5) { top: 45%; left: 45%; animation-duration: 40s; width: 30px; height: 30px; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(60px, -40px) scale(1.15); }
+  }
+  @keyframes rotate3d {
+    0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+    100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+  }
+
+  /* ============ 3D LOGIN CARD ============ */
+  .admin-login-wrap {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .card3d {
+    width: 100%;
+    max-width: 440px;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+  .card3d-inner {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(240,245,255,.92));
+    border-radius: 24px;
+    padding: 44px 36px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,.55),
+      0 0 0 1px rgba(255,255,255,.7),
+      inset 0 1px 0 rgba(255,255,255,.9);
+    transform-style: preserve-3d;
+    transition: transform .4s cubic-bezier(.2,.9,.3,1.15), box-shadow .4s;
+    backdrop-filter: blur(10px);
+  }
+  .card3d:hover .card3d-inner {
+    box-shadow:
+      0 45px 80px -20px rgba(11,61,145,.6),
+      0 0 0 1px rgba(255,179,0,.5),
+      inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  .card3d-inner h3 {
+    font-size: 1.75rem;
+    text-align: center;
+    margin: 0 0 8px;
+    color: #0b3d91;
+    transform: translateZ(30px);
+  }
+  .card3d-inner .sub {
+    text-align: center;
+    color: #5a6b82;
+    font-size: .9rem;
+    margin-bottom: 28px;
+    transform: translateZ(20px);
+  }
+
+  .lock-icon {
+    width: 70px; height: 70px;
+    margin: 0 auto 18px;
+    background: linear-gradient(135deg, #0b3d91, #1e88e5);
+    border-radius: 20px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    box-shadow: 0 15px 30px -8px rgba(11,61,145,.6);
+    transform: translateZ(50px);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 15px 30px -8px rgba(11,61,145,.6); }
+    50% { box-shadow: 0 20px 40px -8px rgba(255,179,0,.7); }
+  }
+
+  /* ============ PASSWORD FIELD WITH TOGGLE ============ */
+  .pw-wrap {
+    position: relative;
+    transform: translateZ(15px);
+  }
+  .pw-wrap input {
+    width: 100%;
+    padding: 14px 50px 14px 16px;
+    border: 2px solid #d5e0f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .pw-wrap input:focus {
+    outline: none;
+    border-color: #0b3d91;
+    box-shadow: 0 0 0 4px rgba(11,61,145,.15);
+  }
+  .pw-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #5a6b82;
+    transition: background .2s, color .2s;
+  }
+  .pw-toggle:hover {
+    background: #eaf1fb;
+    color: #0b3d91;
+  }
+  .pw-toggle.showing {
+    color: #0b3d91;
+  }
+
+  /* ============ BUTTON ============ */
+  .btn-3d {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0b3d91, #1e88e5);
+    cursor: pointer;
+    transform: translateZ(25px);
+    box-shadow:
+      0 12px 24px -8px rgba(11,61,145,.6),
+      inset 0 -3px 0 rgba(0,0,0,.15),
+      inset 0 1px 0 rgba(255,255,255,.35);
+    transition: transform .15s, box-shadow .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-3d::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+    transition: left .6s;
+  }
+  .btn-3d:hover {
+    transform: translateZ(25px) translateY(-2px);
+    box-shadow:
+      0 18px 32px -8px rgba(11,61,145,.75),
+      inset 0 -3px 0 rgba(0,0,0,.15),
+      inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .btn-3d:hover::after { left: 200%; }
+  .btn-3d:active { transform: translateZ(25px) translateY(1px); }
+  .btn-3d:disabled { opacity: .7; cursor: not-allowed; }
+
+  /* ============ HINT ============ */
+  .hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: .8rem;
+    color: #5a6b82;
+    transform: translateZ(10px);
+  }
+  .hint code {
+    background: #eaf1fb;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    color: #0b3d91;
+    font-weight: 700;
+  }
+
+  /* ============ DASHBOARD ============ */
+  #dash { animation: fadeIn .5s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 </head>
 <body>
+
+<!-- 3D Animated Background -->
+<div id="bg3d">
+  <div class="cube"></div>
+  <div class="cube"></div>
+  <div class="cube"></div>
+  <div class="cube"></div>
+  <div class="cube"></div>
+</div>
+
 <script src="app.js"></script>
 <script>renderHeadFoot()</script>
 
 <main>
-<h2 class="sec" style="margin-top:24px">School Admin</h2>
 
-<div class="panel" id="login" style="max-width:420px;margin:0 auto">
-  <h3 style="margin-top:0">Admin login</h3>
-  <label for="pw">Password</label>
-  <input id="pw" type="password" placeholder="Enter admin password">
-  <p><button type="button" class="btn wide" id="in">Log in</button></p>
-  <div id="lm" class="msg"></div>
+<!-- Login -->
+<div class="admin-login-wrap" id="login">
+  <div class="card3d" id="card3d">
+    <div class="card3d-inner">
+      <div class="lock-icon">🔐</div>
+      <h3>Admin Login</h3>
+      <p class="sub">Bahir Dar Computer School</p>
+
+      <label for="pw" style="transform:translateZ(15px);display:block;margin-bottom:8px;font-weight:600;color:#082a66">
+        Password
+      </label>
+      <div class="pw-wrap">
+        <input id="pw" type="password" placeholder="Enter admin password" autocomplete="current-password">
+        <button type="button" class="pw-toggle" id="pwToggle" title="Show password" aria-label="Show password">👁</button>
+      </div>
+
+      <button type="button" class="btn-3d" id="in">🔓 Log in</button>
+
+      <div id="lm" class="msg" style="margin-top:16px"></div>
+
+      <p class="hint">Default: <code>12345678</code></p>
+    </div>
+  </div>
 </div>
 
+<!-- Dashboard -->
 <div id="dash" hidden>
+  <h2 class="sec" style="margin-top:24px">School Admin</h2>
+
   <div class="tabs" id="tabbar">
     <button type="button" class="on" data-t="regs">📋 Registrations</button>
     <button type="button" data-t="crs">📚 Courses</button>
@@ -32,7 +289,7 @@
 
   <section id="pane-regs">
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-      <input id="q" placeholder="Search…" style="flex:1;min-width:220px;margin:0">
+      <input id="q" placeholder="Search name, phone, course, reference…" style="flex:1;min-width:220px;margin:0">
       <button type="button" class="btn" id="csv" style="flex:none">Export CSV</button>
     </div>
     <div class="stats" id="st"></div>
@@ -138,136 +395,228 @@
 </main>
 
 <script>
-let T = sessionStorage.getItem('bdcs_t');
-let rows = [];
-let cats = [], tchs = [], clist = [], tlist = [], gcat = [];
+/* ============ STATE ============ */
+var T = sessionStorage.getItem('bdcs_t');
+var rows = [];
+var cats = [], tchs = [], clist = [], tlist = [], gcat = [];
 
-const H = () => ({ 'x-admin-token': T });
+/* ============ 3D CARD TILT ============ */
+var card3d = document.getElementById('card3d');
+if (card3d) {
+  var inner = card3d.querySelector('.card3d-inner');
+  card3d.addEventListener('mousemove', function(e) {
+    var rect = card3d.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    var cx = rect.width / 2;
+    var cy = rect.height / 2;
+    var rx = ((y - cy) / cy) * -10;
+    var ry = ((x - cx) / cx) * 10;
+    inner.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+  });
+  card3d.addEventListener('mouseleave', function() {
+    inner.style.transform = 'rotateX(0) rotateY(0)';
+  });
+}
 
+/* ============ PASSWORD TOGGLE ============ */
+var pwInput = document.getElementById('pw');
+var pwToggle = document.getElementById('pwToggle');
+if (pwToggle) {
+  pwToggle.onclick = function() {
+    if (pwInput.type === 'password') {
+      pwInput.type = 'text';
+      pwToggle.textContent = '🙈';
+      pwToggle.title = 'Hide password';
+      pwToggle.classList.add('showing');
+    } else {
+      pwInput.type = 'password';
+      pwToggle.textContent = '👁';
+      pwToggle.title = 'Show password';
+      pwToggle.classList.remove('showing');
+    }
+    pwInput.focus();
+  };
+}
+
+/* ============ HELPERS ============ */
 function showMsg(id, txt, cls) {
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   el.className = 'msg show ' + (cls || 'info');
   el.textContent = txt;
 }
 function hideMsg(id) { document.getElementById(id).className = 'msg'; }
+function H() { return { 'x-admin-token': T }; }
 
+/* ============ DRAW REGISTRATIONS ============ */
 function draw() {
-  const q = (document.getElementById('q').value || '').toLowerCase();
-  const list = rows.filter(r => Object.values(r).join(' ').toLowerCase().includes(q));
+  var q = (document.getElementById('q').value || '').toLowerCase();
+  var list = rows.filter(function(r) {
+    return JSON.stringify(r).toLowerCase().indexOf(q) >= 0;
+  });
 
-  document.getElementById('tb').innerHTML = list.map(r => '<tr>' +
-    '<td><b>' + esc(r.tx_ref) + '</b></td>' +
-    '<td>' + esc(r.full_name) + '</td>' +
-    '<td>' + esc(r.phone) + '</td>' +
-    '<td>' + esc(r.course) + '</td>' +
-    '<td>' + etb(r.amount) + '</td>' +
-    '<td>' + esc(r.payment_method) + '</td>' +
-    '<td><span class="badge-status ' + esc(r.status) + '">' + esc(r.status) + '</span></td>' +
-    '<td>' + new Date(r.created_at).toLocaleDateString() + '</td>' +
-    '<td>' + esc(r.payer_ref || '—') + '</td>' +
-    '<td>' + (r.status === 'Pending'
-      ? '<button class="mini ok" onclick="act(' + Number(r.id) + ',\'verify\')">✔ Verify</button> ' +
-        '<button class="mini no" onclick="act(' + Number(r.id) + ',\'reject\')">✘ Reject</button>'
-      : '—') + '</td>' +
-  '</tr>').join('') || '<tr><td colspan="10">No registrations found.</td></tr>';
+  document.getElementById('tb').innerHTML = list.map(function(r) {
+    return '<tr>' +
+      '<td><b>' + esc(r.tx_ref) + '</b></td>' +
+      '<td>' + esc(r.full_name) + '</td>' +
+      '<td>' + esc(r.phone) + '</td>' +
+      '<td>' + esc(r.course) + '</td>' +
+      '<td>' + etb(r.amount) + '</td>' +
+      '<td>' + esc(r.payment_method) + '</td>' +
+      '<td><span class="badge-status ' + esc(r.status) + '">' + esc(r.status) + '</span></td>' +
+      '<td>' + new Date(r.created_at).toLocaleDateString() + '</td>' +
+      '<td>' + esc(r.payer_ref || '—') + '</td>' +
+      '<td>' + (r.status === 'Pending'
+        ? '<button class="mini ok" onclick="act(' + r.id + ',\'verify\')">✔ Verify</button> ' +
+          '<button class="mini no" onclick="act(' + r.id + ',\'reject\')">✘ Reject</button>'
+        : '—') + '</td>' +
+    '</tr>';
+  }).join('') || '<tr><td colspan="10">No registrations found.</td></tr>';
 
-  const paid = rows.filter(r => r.status === 'Paid');
+  var paid = rows.filter(function(r) { return r.status === 'Paid'; });
   document.getElementById('st').innerHTML = [
     ['Total students', rows.length],
     ['Paid', paid.length],
-    ['Pending', rows.filter(r => r.status === 'Pending').length],
-    ['Revenue', etb(paid.reduce((a, r) => a + Number(r.amount), 0))],
-  ].map(x => '<div><b>' + x[1] + '</b>' + x[0] + '</div>').join('');
+    ['Pending', rows.filter(function(r) { return r.status === 'Pending'; }).length],
+    ['Revenue', etb(paid.reduce(function(a, r) { return a + Number(r.amount); }, 0))]
+  ].map(function(x) {
+    return '<div><b>' + x[1] + '</b>' + x[0] + '</div>';
+  }).join('');
 }
 
-async function load() {
-  try {
-    rows = await api('/api/admin/registrations', { headers: H() });
-  } catch (e) {
-    sessionStorage.removeItem('bdcs_t');
-    T = null;
-    return;
-  }
-  document.getElementById('login').hidden = true;
-  document.getElementById('dash').hidden = false;
-  draw();
-}
-
-document.getElementById('in').onclick = async () => {
-  hideMsg('lm');
-  try {
-    const d = await api('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'admin', password: document.getElementById('pw').value }),
+/* ============ LOAD DATA ============ */
+function load() {
+  api('/api/admin/registrations', { headers: H() })
+    .then(function(data) {
+      rows = data;
+      document.getElementById('login').hidden = true;
+      document.getElementById('dash').hidden = false;
+      draw();
+    })
+    .catch(function(e) {
+      sessionStorage.removeItem('bdcs_t');
+      T = null;
+      showMsg('lm', e.message, 'err');
     });
-    T = d.token;
+}
+
+/* ============ LOGIN ============ */
+document.getElementById('in').onclick = function() {
+  hideMsg('lm');
+  var pw = document.getElementById('pw').value;
+  if (!pw) { showMsg('lm', 'Please enter the password.', 'err'); return; }
+
+  document.getElementById('in').disabled = true;
+  showMsg('lm', 'Logging in…', 'info');
+
+  fetch('api.php?route=/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'admin', password: pw })
+  })
+  .then(function(r) {
+    return r.text().then(function(txt) {
+      try { return { ok: r.ok, status: r.status, data: JSON.parse(txt) }; }
+      catch (e) { return { ok: r.ok, status: r.status, data: { error: 'Server: ' + txt.slice(0, 150) } }; }
+    });
+  })
+  .then(function(res) {
+    document.getElementById('in').disabled = false;
+    if (!res.ok || !res.data.token) {
+      showMsg('lm', res.data.error || ('Login failed (HTTP ' + res.status + ')'), 'err');
+      return;
+    }
+    T = res.data.token;
     sessionStorage.setItem('bdcs_t', T);
     load();
-  } catch (e) {
-    showMsg('lm', e.message, 'err');
-  }
+  })
+  .catch(function(e) {
+    document.getElementById('in').disabled = false;
+    showMsg('lm', 'Network error: ' + e.message, 'err');
+  });
 };
 
-async function act(id, a) {
+/* ============ ENTER KEY ============ */
+document.getElementById('pw').onkeydown = function(e) {
+  if (e.key === 'Enter') document.getElementById('in').click();
+};
+
+/* ============ VERIFY / REJECT ============ */
+function act(id, a) {
   if (!confirm('Are you sure you want to ' + a + ' this registration?')) return;
-  try {
-    await api('/api/admin/verify/' + id, {
-      method: 'POST',
-      headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ action: a }),
-    });
-    rows = await api('/api/admin/registrations', { headers: H() });
+  api('/api/admin/verify/' + id, {
+    method: 'POST',
+    headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ action: a })
+  }).then(function() {
+    return api('/api/admin/registrations', { headers: H() });
+  }).then(function(data) {
+    rows = data;
     draw();
-  } catch (e) { alert(e.message); }
+  }).catch(function(e) { alert(e.message); });
 }
 
 document.getElementById('q').oninput = draw;
-document.getElementById('out').onclick = () => {
+
+document.getElementById('out').onclick = function() {
   sessionStorage.removeItem('bdcs_t');
   location.reload();
 };
 
-document.getElementById('csv').onclick = async () => {
-  const res = await fetch('api.php?route=/api/admin/export.csv', { headers: H() });
-  if (!res.ok) return alert('Could not export.');
-  const t = await res.text();
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv' }));
-  a.download = 'bdcs-registrations.csv';
-  a.click();
+document.getElementById('csv').onclick = function() {
+  fetch('api.php?route=/api/admin/export.csv', { headers: H() })
+    .then(function(r) { return r.text(); })
+    .then(function(t) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv' }));
+      a.download = 'bdcs-registrations.csv';
+      a.click();
+    });
 };
 
-document.getElementById('tabbar').onclick = e => {
-  const b = e.target.closest('button[data-t]');
+/* ============ TABS ============ */
+document.getElementById('tabbar').onclick = function(e) {
+  var b = e.target.closest('button[data-t]');
   if (!b) return;
-  document.querySelectorAll('#tabbar button[data-t]').forEach(x => x.classList.toggle('on', x === b));
-  ['regs','crs','tch','cat'].forEach(k => document.getElementById('pane-' + k).hidden = (k !== b.dataset.t));
+  document.querySelectorAll('#tabbar button[data-t]').forEach(function(x) {
+    x.classList.toggle('on', x === b);
+  });
+  ['regs','crs','tch','cat'].forEach(function(k) {
+    document.getElementById('pane-' + k).hidden = (k !== b.dataset.t);
+  });
   if (b.dataset.t === 'crs') loadCourses();
   if (b.dataset.t === 'tch') loadTeachers();
   if (b.dataset.t === 'cat') loadCats();
 };
 
-async function loadMeta() {
-  const d = await api('/api/courses');
-  cats = d.categories;
-  tchs = await api('/api/teachers');
-  document.getElementById('f_cat').innerHTML = cats.map(c => '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>').join('');
-  document.getElementById('f_t').innerHTML = '<option value="">— no teacher yet —</option>' +
-    tchs.map(t => '<option value="' + t.id + '">' + t.full_name + '</option>').join('');
+/* ============ COURSES TAB ============ */
+function loadMeta() {
+  return api('/api/courses').then(function(d) {
+    cats = d.categories;
+    return api('/api/teachers');
+  }).then(function(t) {
+    tchs = t;
+    document.getElementById('f_cat').innerHTML = cats.map(function(c) {
+      return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>';
+    }).join('');
+    document.getElementById('f_t').innerHTML = '<option value="">— no teacher yet —</option>' +
+      tchs.map(function(t) { return '<option value="' + t.id + '">' + t.full_name + '</option>'; }).join('');
+  });
 }
 
-async function loadCourses() {
-  try {
-    if (!cats.length) await loadMeta();
-    clist = await api('/api/admin/courses', { headers: H() });
+function loadCourses() {
+  var p = cats.length ? Promise.resolve() : loadMeta();
+  p.then(function() {
+    return api('/api/admin/courses', { headers: H() });
+  }).then(function(data) {
+    clist = data;
     drawCourses();
-  } catch (e) { showMsg('cmsg', e.message, 'err'); }
+  }).catch(function(e) { showMsg('cmsg', e.message, 'err'); });
 }
 
 function drawCourses() {
-  document.getElementById('ctb').innerHTML = clist.map(c => {
-    const final = c.final_price || c.fee - c.discount;
+  document.getElementById('ctb').innerHTML = clist.map(function(c) {
+    var final = c.final_price || (c.fee - c.discount);
     return '<tr>' +
       '<td><b>#' + c.id + '</b></td>' +
       '<td>' + esc(c.name) + '</td>' +
@@ -287,7 +636,8 @@ function drawCourses() {
 }
 
 function clearCourse() {
-  ['f_id','f_name','f_fee','f_disc','f_dur','f_start','f_end','f_sch','f_desc','f_syl'].forEach(i => document.getElementById(i).value = '');
+  ['f_id','f_name','f_fee','f_disc','f_dur','f_start','f_end','f_sch','f_desc','f_syl']
+    .forEach(function(i) { document.getElementById(i).value = ''; });
   document.getElementById('f_cert').value = 'Certificate of Completion';
   document.getElementById('f_max').value = 20;
   document.getElementById('f_lvl').value = 'Beginner';
@@ -295,7 +645,7 @@ function clearCourse() {
 }
 
 function editCourse(id) {
-  const c = clist.find(x => x.id === id);
+  var c = clist.filter(function(x) { return x.id === id; })[0];
   if (!c) return;
   document.getElementById('f_id').value = c.id;
   document.getElementById('f_name').value = c.name;
@@ -317,21 +667,19 @@ function editCourse(id) {
   scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function delCourse(id) {
-  const c = clist.find(x => x.id === id);
+function delCourse(id) {
+  var c = clist.filter(function(x) { return x.id === id; })[0];
   if (!confirm('Delete "' + c.name + '"?')) return;
-  try {
-    const r = await api('/api/admin/courses/' + id, { method: 'DELETE', headers: H() });
-    alert(r.message || 'Done.');
-    await loadCourses();
-  } catch (e) { alert(e.message); }
+  api('/api/admin/courses/' + id, { method: 'DELETE', headers: H() })
+    .then(function(r) { alert(r.message || 'Done.'); loadCourses(); })
+    .catch(function(e) { alert(e.message); });
 }
 
-document.getElementById('cclear').onclick = () => { clearCourse(); hideMsg('cmsg'); };
+document.getElementById('cclear').onclick = function() { clearCourse(); hideMsg('cmsg'); };
 
-document.getElementById('csave').onclick = async () => {
-  const id = document.getElementById('f_id').value;
-  const body = {
+document.getElementById('csave').onclick = function() {
+  var id = document.getElementById('f_id').value;
+  var body = {
     name: document.getElementById('f_name').value,
     category_id: Number(document.getElementById('f_cat').value),
     teacher_id: document.getElementById('f_t').value ? Number(document.getElementById('f_t').value) : null,
@@ -346,43 +694,51 @@ document.getElementById('csave').onclick = async () => {
     level: document.getElementById('f_lvl').value,
     active: document.getElementById('f_act').checked,
     description: document.getElementById('f_desc').value,
-    syllabus: document.getElementById('f_syl').value,
+    syllabus: document.getElementById('f_syl').value
   };
-  try {
-    await api(id ? '/api/admin/courses/' + id : '/api/admin/courses', {
-      method: id ? 'PUT' : 'POST',
-      headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
-      body: JSON.stringify(body),
-    });
+  api(id ? '/api/admin/courses/' + id : '/api/admin/courses', {
+    method: id ? 'PUT' : 'POST',
+    headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
+    body: JSON.stringify(body)
+  }).then(function() {
     clearCourse();
-    await loadCourses();
+    loadCourses();
     showMsg('cmsg', id ? 'Course updated.' : 'Course added.', 'ok');
-  } catch (e) { showMsg('cmsg', e.message, 'err'); }
+  }).catch(function(e) { showMsg('cmsg', e.message, 'err'); });
 };
 
-async function loadTeachers() {
-  try { tlist = await api('/api/admin/teachers', { headers: H() }); drawTeachers(); }
-  catch (e) { showMsg('tmsg', e.message, 'err'); }
+/* ============ TEACHERS TAB ============ */
+function loadTeachers() {
+  api('/api/admin/teachers', { headers: H() })
+    .then(function(data) { tlist = data; drawTeachers(); })
+    .catch(function(e) { showMsg('tmsg', e.message, 'err'); });
 }
 
 function drawTeachers() {
-  document.getElementById('ttb').innerHTML = tlist.map(t => '<tr>' +
-    '<td><img src="' + esc(t.photo_url || AVATAR + encodeURIComponent(t.full_name)) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></td>' +
-    '<td>' + esc(t.full_name) + '</td>' +
-    '<td>' + esc(t.title || '—') + '</td>' +
-    '<td>' + esc((t.bio || '').slice(0, 80)) + '</td>' +
-    '<td>' + (t.course_count || 0) + '</td>' +
-    '<td>' +
-      '<button class="mini neutral" onclick="editTeacher(' + t.id + ')">✎ Edit</button> ' +
-      '<button class="mini no" onclick="delTeacher(' + t.id + ')">🗑 Delete</button>' +
-    '</td>' +
-  '</tr>').join('') || '<tr><td colspan="6">No teachers yet.</td></tr>';
+  document.getElementById('ttb').innerHTML = tlist.map(function(t) {
+    return '<tr>' +
+      '<td><img src="' + esc(t.photo_url || AVATAR + encodeURIComponent(t.full_name)) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></td>' +
+      '<td>' + esc(t.full_name) + '</td>' +
+      '<td>' + esc(t.title || '—') + '</td>' +
+      '<td>' + esc((t.bio || '').slice(0, 80)) + '</td>' +
+      '<td>' + (t.course_count || 0) + '</td>' +
+      '<td>' +
+        '<button class="mini neutral" onclick="editTeacher(' + t.id + ')">✎ Edit</button> ' +
+        '<button class="mini no" onclick="delTeacher(' + t.id + ')">🗑 Delete</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('') || '<tr><td colspan="6">No teachers yet.</td></tr>';
 }
 
-function clearTeacher() { ['t_id','t_name','t_title','t_photo','t_bio'].forEach(i => document.getElementById(i).value = ''); }
+function clearTeacher() {
+  ['t_id','t_name','t_title','t_photo','t_bio'].forEach(function(i) {
+    document.getElementById(i).value = '';
+  });
+}
 
 function editTeacher(id) {
-  const t = tlist.find(x => x.id === id); if (!t) return;
+  var t = tlist.filter(function(x) { return x.id === id; })[0];
+  if (!t) return;
   document.getElementById('t_id').value = t.id;
   document.getElementById('t_name').value = t.full_name;
   document.getElementById('t_title').value = t.title || '';
@@ -391,81 +747,80 @@ function editTeacher(id) {
   showMsg('tmsg', 'Editing "' + t.full_name + '"', 'info');
 }
 
-async function delTeacher(id) {
-  const t = tlist.find(x => x.id === id);
+function delTeacher(id) {
+  var t = tlist.filter(function(x) { return x.id === id; })[0];
   if (!confirm('Delete teacher "' + t.full_name + '"?')) return;
-  try {
-    await api('/api/admin/teachers/' + id, { method: 'DELETE', headers: H() });
-    cats = [];
-    await loadTeachers();
-    await loadMeta();
-  } catch (e) { alert(e.message); }
+  api('/api/admin/teachers/' + id, { method: 'DELETE', headers: H() })
+    .then(function() { cats = []; loadTeachers(); loadMeta(); })
+    .catch(function(e) { alert(e.message); });
 }
 
-document.getElementById('tclear').onclick = () => { clearTeacher(); hideMsg('tmsg'); };
+document.getElementById('tclear').onclick = function() { clearTeacher(); hideMsg('tmsg'); };
 
-document.getElementById('tsave').onclick = async () => {
-  const id = document.getElementById('t_id').value;
-  const body = {
+document.getElementById('tsave').onclick = function() {
+  var id = document.getElementById('t_id').value;
+  var body = {
     full_name: document.getElementById('t_name').value,
     title: document.getElementById('t_title').value,
     photo_url: document.getElementById('t_photo').value,
-    bio: document.getElementById('t_bio').value,
+    bio: document.getElementById('t_bio').value
   };
-  try {
-    await api(id ? '/api/admin/teachers/' + id : '/api/admin/teachers', {
-      method: id ? 'PUT' : 'POST',
-      headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
-      body: JSON.stringify(body),
-    });
+  api(id ? '/api/admin/teachers/' + id : '/api/admin/teachers', {
+    method: id ? 'PUT' : 'POST',
+    headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
+    body: JSON.stringify(body)
+  }).then(function() {
     clearTeacher(); cats = [];
-    await loadTeachers(); await loadMeta();
+    loadTeachers(); loadMeta();
     showMsg('tmsg', id ? 'Teacher updated.' : 'Teacher added.', 'ok');
-  } catch (e) { showMsg('tmsg', e.message, 'err'); }
+  }).catch(function(e) { showMsg('tmsg', e.message, 'err'); });
 };
 
-async function loadCats() {
-  try { gcat = await api('/api/admin/categories', { headers: H() }); drawCats(); }
-  catch (e) { showMsg('gmsg', e.message, 'err'); }
+/* ============ CATEGORIES TAB ============ */
+function loadCats() {
+  api('/api/admin/categories', { headers: H() })
+    .then(function(data) { gcat = data; drawCats(); })
+    .catch(function(e) { showMsg('gmsg', e.message, 'err'); });
 }
 
 function drawCats() {
-  document.getElementById('gtb').innerHTML = gcat.map(c => '<tr>' +
-    '<td style="font-size:1.5rem">' + esc(c.icon) + '</td>' +
-    '<td>' + esc(c.name) + '</td>' +
-    '<td><code>' + esc(c.slug) + '</code></td>' +
-    '<td><button class="mini no" onclick="delCat(' + c.id + ')">🗑 Delete</button></td>' +
-  '</tr>').join('') || '<tr><td colspan="4">No categories yet.</td></tr>';
+  document.getElementById('gtb').innerHTML = gcat.map(function(c) {
+    return '<tr>' +
+      '<td style="font-size:1.5rem">' + esc(c.icon) + '</td>' +
+      '<td>' + esc(c.name) + '</td>' +
+      '<td><code>' + esc(c.slug) + '</code></td>' +
+      '<td><button class="mini no" onclick="delCat(' + c.id + ')">🗑 Delete</button></td>' +
+    '</tr>';
+  }).join('') || '<tr><td colspan="4">No categories yet.</td></tr>';
 }
 
-async function delCat(id) {
+function delCat(id) {
   if (!confirm('Delete this category?')) return;
-  try {
-    await api('/api/admin/categories/' + id, { method: 'DELETE', headers: H() });
-    cats = []; await loadCats(); await loadMeta();
-  } catch (e) { alert(e.message); }
+  api('/api/admin/categories/' + id, { method: 'DELETE', headers: H() })
+    .then(function() { cats = []; loadCats(); loadMeta(); })
+    .catch(function(e) { alert(e.message); });
 }
 
-document.getElementById('gsave').onclick = async () => {
-  const body = {
+document.getElementById('gsave').onclick = function() {
+  var body = {
     name: document.getElementById('g_name').value,
     slug: document.getElementById('g_slug').value.trim().toLowerCase().replace(/\s+/g, '-'),
-    icon: document.getElementById('g_icon').value || '📘',
+    icon: document.getElementById('g_icon').value || '📘'
   };
-  try {
-    await api('/api/admin/categories', {
-      method: 'POST',
-      headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
-      body: JSON.stringify(body),
-    });
+  api('/api/admin/categories', {
+    method: 'POST',
+    headers: Object.assign({}, H(), { 'Content-Type': 'application/json' }),
+    body: JSON.stringify(body)
+  }).then(function() {
     document.getElementById('g_name').value = '';
     document.getElementById('g_slug').value = '';
     document.getElementById('g_icon').value = '📘';
-    cats = []; await loadCats(); await loadMeta();
+    cats = []; loadCats(); loadMeta();
     showMsg('gmsg', 'Category added.', 'ok');
-  } catch (e) { showMsg('gmsg', e.message, 'err'); }
+  }).catch(function(e) { showMsg('gmsg', e.message, 'err'); });
 };
 
+/* ============ BOOT ============ */
 if (T) load();
 </script>
 </body>
