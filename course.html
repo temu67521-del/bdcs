@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Course · BDCS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="app.js"></script>
+<script>renderHeadFoot()</script>
+<main id="m">Loading…</main>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+api('/api/course/' + id).then(c => {
+  document.title = c.name + ' · BDCS';
+  const photo = c.photo_url || (AVATAR + encodeURIComponent(c.teacher_name || 'Teacher'));
+  document.getElementById('m').innerHTML = `
+  <div class="two">
+    <div>
+      <div class="panel">
+        <span class="badge lvl">${esc(c.level)}</span>
+        <span class="badge cat">${esc(c.category_name)}</span>
+        <h1 style="color:var(--primary);margin-top:10px">${esc(c.name)}</h1>
+        <p>${esc(c.description)}</p>
+        <table class="detail-table">
+          <tr><th>Course time</th><td>${esc(c.duration)}</td></tr>
+          <tr><th>Class time</th><td>${esc(c.schedule || '—')}</td></tr>
+          <tr><th>Category</th><td>${esc(c.category_name)}</td></tr>
+          <tr><th>Seats</th><td>${c.max_students}</td></tr>
+        </table>
+        <h3>Syllabus</h3>
+        <pre class="syllabus">${esc(c.syllabus || '—')}</pre>
+      </div>
+    </div>
+    <aside>
+      <div class="panel">
+        <div style="font-size:2rem;font-weight:800;color:var(--dark)">${etb(c.fee)}</div>
+        <p><a class="btn wide" href="index.html?course=${c.id}#register">Enroll Now</a></p>
+        ${seats(c)}
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="teacher-mini" style="margin:0">
+          <img src="${esc(photo)}" alt="">
+          <div><b>${esc(c.teacher_name || 'To be assigned')}</b><br>
+            <small>${esc(c.teacher_title)}</small></div>
+        </div>
+        <p style="margin-top:12px;color:var(--muted);font-size:.9rem">${esc(c.teacher_bio)}</p>
+      </div>
+    </aside>
+  </div>`;
+}).catch(e => document.getElementById('m').textContent = e.message);
+</script>
+</body>
+</html>
