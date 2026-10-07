@@ -18,7 +18,6 @@ $DB_NAME = getenv('DB_NAME');
 $DB_USER = getenv('DB_USER');
 $DB_PASS = getenv('DB_PASS');
 
-// Optional: allow single DATABASE_URL override
 $DATABASE_URL = getenv('DATABASE_URL');
 if ($DATABASE_URL) {
     $u = parse_url($DATABASE_URL);
@@ -47,11 +46,11 @@ try {
     exit;
 }
 
-// ---------- Ensure admin exists (password: 1234) ----------
+// ---------- Ensure admin exists (password: 12345678) ----------
 $stmt = $pdo->query("SELECT COUNT(*) AS n FROM admins");
 $row = $stmt->fetch();
 if ((int)$row['n'] === 0) {
-    $hash = password_hash('1234', PASSWORD_DEFAULT);
+    $hash = password_hash('12345678', PASSWORD_DEFAULT);
     $pdo->prepare("INSERT INTO admins(username, password_hash) VALUES(?, ?)")
         ->execute(['admin', $hash]);
 }
@@ -278,7 +277,6 @@ if ($method === 'POST' && preg_match('#^/api/admin/verify/(\d+)$#', $route, $m))
     $pdo->prepare("INSERT INTO payments(registration_id, method, transaction_id, amount, status) VALUES(?,?,?,?,'Paid')")
         ->execute([$id, $g['payment_method'], $g['pref'], $g['amount']]);
 
-    // Email notification (best-effort; may not work on free hosting)
     $stmt = $pdo->prepare("SELECT st.email, st.full_name, c.name AS course
                            FROM registrations r
                            JOIN students st ON st.id = r.student_id
