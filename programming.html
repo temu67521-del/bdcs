@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programming Courses · BDCS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="app.js"></script>
+<script>renderHeadFoot()</script>
+<section class="hero">
+  <h1>Programming Courses</h1>
+  <p>Become a software developer — Java, Python, Web, Databases and more.</p>
+</section>
+<main>
+  <h2 class="sec" style="margin-top:0">All Programming courses</h2>
+  <div class="grid" id="grid">Loading…</div>
+</main>
+<script>
+api('/api/courses/by-category/programming').then(list => {
+  document.getElementById('grid').innerHTML = list.map(card).join('') || '<p>No courses yet.</p>';
+}).catch(e => document.getElementById('grid').textContent = e.message);
+</script>
+</body>
+</html>
