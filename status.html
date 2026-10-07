@@ -3,87 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Check Registration Status · BDCS</title>
+<title>Check Status · BDCS</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <script src="app.js"></script>
 <script>renderHeadFoot()</script>
-
 <main>
 <section class="hero" style="padding:70px 4% 60px">
   <h1>Check your registration status</h1>
-  <p>Enter the reference number from your receipt to see the current status of your payment.</p>
+  <p>Enter your reference number to see the current status.</p>
 </section>
-
 <div class="panel" style="max-width:560px;margin:40px auto">
   <label for="refInput">Reference number</label>
   <input id="refInput" placeholder="e.g. BDCS-A1B2C3D4" style="text-transform:uppercase">
-  <p><button type="button" class="btn wide" id="checkBtn">🔍 Check status</button></p>
-
+  <p><button class="btn wide" id="checkBtn">🔍 Check status</button></p>
   <div id="result" style="margin-top:20px"></div>
 </div>
-
-<div class="panel" style="max-width:560px;margin:0 auto 60px;text-align:center;color:var(--muted);font-size:.9rem">
-  <b>Where do I find my reference?</b><br>
-  It's on the receipt page you saw after registering, and it also starts with <code>BDCS-</code>.
-</div>
 </main>
-
 <script>
-const params = new URLSearchParams(location.search);
-const initialRef = params.get('ref');
-if (initialRef) $('#refInput').value = initialRef;
+const initialRef = new URLSearchParams(location.search).get('ref');
+if (initialRef) document.getElementById('refInput').value = initialRef;
 
 async function checkStatus() {
-  const ref = $('#refInput').value.trim().toUpperCase();
-  const box = $('#result');
-
-  if (!ref) {
-    box.innerHTML = '<p class="msg err show">Please enter a reference number.</p>';
-    return;
-  }
-
+  const ref = document.getElementById('refInput').value.trim().toUpperCase();
+  const box = document.getElementById('result');
+  if (!ref) { box.innerHTML = '<p class="msg err show">Enter a reference number.</p>'; return; }
   box.innerHTML = '<p class="msg info show">Checking…</p>';
-
   try {
     const r = await api('/api/receipt/' + ref);
-
     box.innerHTML = `
       <div class="panel" style="background:var(--soft);box-shadow:none">
-        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1">
-          <span>Reference</span><b>${esc(r.tx_ref)}</b>
-        </div>
-        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1">
-          <span>Student</span><b>${esc(r.full_name)}</b>
-        </div>
-        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1">
-          <span>Course</span><b>${esc(r.course)}</b>
-        </div>
-        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0">
-          <span>Status</span>
+        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1"><span>Reference</span><b>${esc(r.tx_ref)}</b></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1"><span>Student</span><b>${esc(r.full_name)}</b></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1"><span>Course</span><b>${esc(r.course)}</b></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:8px 0"><span>Status</span>
           <b><span class="badge-status ${esc(r.status)}">${esc(r.status)}</span></b>
         </div>
       </div>
-
-      ${r.status === 'Pending'
-        ? `<p class="msg info show">⏳ Your payment is still waiting for admin verification. Please check again later.</p>` : ''}
-      ${r.status === 'Paid'
-        ? `<p class="msg ok show">✅ Your payment has been verified! Your seat is confirmed.</p>` : ''}
-      ${r.status === 'Failed'
-        ? `<p class="msg err show">❌ Your payment was rejected. Please contact the school office.</p>` : ''}
-
+      ${r.status === 'Pending' ? '<p class="msg info show">⏳ Waiting for admin verification.</p>' : ''}
+      ${r.status === 'Paid' ? '<p class="msg ok show">✅ Payment verified! Your seat is confirmed.</p>' : ''}
+      ${r.status === 'Failed' ? '<p class="msg err show">❌ Payment was rejected.</p>' : ''}
       <p style="text-align:center;margin-top:16px">
         <a class="btn" href="receipt.html?ref=${encodeURIComponent(r.tx_ref)}">View full receipt →</a>
       </p>`;
-  } catch (e) {
-    box.innerHTML = `<p class="msg err show">${esc(e.message)}</p>`;
-  }
+  } catch (e) { box.innerHTML = '<p class="msg err show">'+esc(e.message)+'</p>'; }
 }
-
-$('#checkBtn').onclick = checkStatus;
-$('#refInput').onkeydown = e => { if (e.key === 'Enter') checkStatus(); };
-
+document.getElementById('checkBtn').onclick = checkStatus;
+document.getElementById('refInput').onkeydown = e => { if (e.key === 'Enter') checkStatus(); };
 if (initialRef) checkStatus();
 </script>
 </body>
